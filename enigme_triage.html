@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Triage Protocol - Step 3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="world"><div class="grid-floor"></div></div>
+    <div class="vignette"></div>
+    <div class="scanlines"></div>
+
+    <div class="ipad-container">
+        
+        <header class="top-bar">
+            <div class="brand">PROTOCOL <span>ACTIVE</span></div>
+            <div class="status-badge" style="color:var(--warning); border-color:var(--warning); background:rgba(234, 179, 8, 0.1);">STEP 3/3</div>
+        </header>
+
+        <div class="content-area">
+            
+            <div class="triage-container">
+                
+                <div class="patient-tabs" id="tabs-container"></div>
+
+                <div class="patient-file" id="patient-view">
+                    <div class="patient-id">
+                        <span id="p-name">LOADING DATA...</span>
+                        <span id="p-status" style="font-size:1rem; color:#64748b;">NOT TAGGED</span>
+                    </div>
+
+                    <div class="vitals-grid">
+                        <div class="vital-box" id="box-resp" onclick="checkVital('resp')">
+                            <div class="vital-label">RESPIRATION RATE</div>
+                            <div class="tap-hint">✚ TAP TO COUNT</div>
+                            <div class="vital-value" style="display:none;"></div>
+                            <div class="scan-bar"></div>
+                        </div>
+
+                        <div class="vital-box" id="box-pulse" onclick="checkVital('pulse')">
+                            <div class="vital-label">PERFUSION / PULSE</div>
+                            <div class="tap-hint">✚ TAP TO CHECK</div>
+                            <div class="vital-value" style="display:none;"></div>
+                            <div class="ecg-line"></div><div class="ecg-flat"></div><div class="scan-bar"></div>
+                        </div>
+
+                        <div class="vital-box" id="box-mental" onclick="checkVital('mental')">
+                            <div class="vital-label">MENTAL STATUS</div>
+                            <div class="tap-hint">✚ TAP TO ASSESS</div>
+                            <div class="vital-value" style="display:none;"></div>
+                            <div class="scan-bar"></div>
+                        </div>
+
+                        <div class="vital-box" id="box-injury" onclick="checkVital('injury')">
+                            <div class="vital-label">VISIBLE INJURIES</div>
+                            <div class="tap-hint">✚ TAP TO INSPECT</div>
+                            <div class="vital-value" style="display:none; font-size:0.9rem;"></div>
+                            <div class="scan-bar"></div>
+                        </div>
+                    </div>
+
+                    <div id="action-panel" class="action-required-panel">
+                        <div class="action-timer-bar" id="action-bar"></div>
+                        
+                        <div class="action-header">
+                            <div class="action-title">⚠ INTERVENTION REQUIRED</div>
+                            <div class="action-timer-display" id="action-timer">10.0s</div>
+                        </div>
+                        
+                        <div class="action-options" id="action-buttons"></div>
+                    </div>
+
+                    <div class="observation-text" id="p-obs" style="display:none;"></div>
+
+                    <div class="decision-panel">
+                        <button class="tag-btn tag-green" onclick="tagPatient('GREEN')">MINOR</button>
+                        <button class="tag-btn tag-yellow" onclick="tagPatient('YELLOW')">DELAYED</button>
+                        <button class="tag-btn tag-red" onclick="tagPatient('RED')">IMMEDIATE</button>
+                        <button class="tag-btn tag-black" onclick="tagPatient('BLACK')">MORGUE</button>
+                    </div>
+                </div>
+
+                <button class="submit-triage" id="btn-submit" onclick="submitTriage()" disabled>
+                    SUBMIT FINAL REPORT (0/5 TAGGED)
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="overlay-briefing" class="modal-overlay visible">
+        <div class="modal" style="border-color:var(--primary); box-shadow: 0 0 50px rgba(14, 165, 233, 0.3);">
+            <h2 style="color:var(--primary); font-size:2rem; margin:0 0 10px 0;">MISSION BRIEFING</h2>
+            <div style="text-align:left; color:#cbd5e1; line-height:1.6; margin-bottom:20px;">
+                <p><strong>SITUATION:</strong> Mass casualty incident. Multiple victims.</p>
+                <p><strong>PROTOCOL:</strong> Strict adherence to S.A.V.E. GUIDELINES required.</p>
+                <div style="background:rgba(239,68,68,0.2); border:1px solid var(--alert); padding:10px; color:#fff; font-weight:bold; text-align:center;">
+                    ⚠ DO NOT GUESS.<br>REFER TO YOUR PHYSICAL DOCUMENT.
+                </div>
+            </div>
+            <button class="btn-primary" onclick="closeBriefing()">I HAVE THE GUIDE</button>
+        </div>
+    </div>
+
+    <div id="overlay-result" class="modal-overlay">
+        <div class="modal">
+            <h2 id="res-title" style="font-size:2rem; margin:0 0 10px 0;"></h2>
+            <p id="res-text" style="color:#cbd5e1; line-height:1.6;"></p>
+            <button class="btn-primary" id="res-btn" onclick="location.reload()">RETRY</button>
+        </div>
+    </div>
+
+    <div id="victory-screen" class="victory-overlay">
+        <div style="color:var(--success); font-family:var(--font-mono); letter-spacing:3px; margin-bottom:10px;">PROTOCOL COMPLETED</div>
+        <div class="victory-title">MISSION ACCOMPLISHED</div>
+        
+        <div class="victory-rank" id="vic-rank">S</div>
+        <div style="color:#cbd5e1; font-style:italic; margin-top:-10px;">PERFORMANCE RATING</div>
+
+        <div class="victory-stats">
+            <div class="stat-item">
+                <span class="stat-val" id="vic-time">--:--</span>
+                <span class="stat-label">TIME</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-val" id="vic-attempts">1</span>
+                <span class="stat-label">ATTEMPTS</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-val" id="vic-errors">0</span>
+                <span class="stat-label">ERRORS</span>
+            </div>
+        </div>
+
+        <button class="btn-finish" onclick="window.location.href='index.html'">RETURN TO BASE</button>
+    </div>
+
+    <div id="dev-menu">
+        <h3>/// ADMIN PANEL ///</h3>
+        <button class="dev-btn" onclick="forceSolve()">> DEBUG: AUTO-TAG ALL</button>
+        <button class="dev-btn" onclick="location.reload()">> RESTART LEVEL</button>
+        <div class="close-dev" onclick="document.getElementById('dev-menu').classList.remove('visible')">[ CLOSE ]</div>
+    </div>
+
+    <script src="script_triage.js"></script>
+</body>
+</html>

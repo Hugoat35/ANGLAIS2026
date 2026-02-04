@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Emergency Call - Step 2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="world"><div class="grid-floor"></div></div>
+    <div class="vignette"></div>
+    <div class="scanlines"></div>
+
+    <div class="ipad-container">
+        
+        <header class="top-bar">
+            <div class="brand">PROTOCOL <span>ACTIVE</span></div>
+            <div class="status-badge" style="color:var(--alert); border-color:var(--alert); background:rgba(239, 68, 68, 0.1);">STEP 2/2</div>
+        </header>
+
+        <div class="content-area">
+            
+            <div class="phone-interface active">
+                
+                <div id="screen-dial" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%;">
+                    <div class="call-status">EMERGENCY LINE OFFLINE</div>
+                    <div class="dial-display" id="dial-display">_ _ _</div>
+                    <p style="color:#64748b;">FIND THE RIGHT NUMBER</p>
+                </div>
+
+                <div id="screen-connecting">
+                    <div class="connecting-text">CONNECTING...</div>
+                    <div class="loader-bar"><div class="loader-fill"></div></div>
+                    <p style="color:#64748b; margin-top:15px; font-size:0.8rem;">ESTABLISHING SECURE LINK</p>
+                </div>
+
+                <div id="screen-active-call">
+                    <div class="call-status" style="color:var(--success)">CONNECTED TO OPERATOR</div>
+                    
+                    <div class="wave-container" style="justify-content:center;">
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    </div>
+
+                    <div class="call-timer" id="call-timer">02:00</div>
+                    
+                    <p style="color:var(--primary); margin-bottom:5px;">GIVE 5 KEY INFORMATIONS</p>
+                    <div class="dial-display" id="final-code-display" style="border-color:var(--success); color:#fff; font-size: 2.5rem;">_ _ _ _</div>
+                    <p style="color:#64748b; font-size:0.8rem; margin-bottom:10px;">ENTER OPERATOR VALIDATION CODE</p>
+
+                    <div class="call-actions">
+                        <button class="btn-action-round keypad" onclick="toggleKeypad()" id="btn-toggle-pad">
+                            <div class="icon-circle">⌨</div>
+                            <span>KEYPAD</span>
+                        </button>
+                        
+                        <button class="btn-action-round hangup" onclick="hangUpCall()">
+                            <div class="icon-circle">✖</div>
+                            <span>END CALL</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="numpad-wrapper" id="numpad-area" style="margin-top:auto;">
+                <div class="numpad">
+                    <button class="key" onclick="pressKey(1)">1</button>
+                    <button class="key" onclick="pressKey(2)">2</button>
+                    <button class="key" onclick="pressKey(3)">3</button>
+                    <button class="key" onclick="pressKey(4)">4</button>
+                    <button class="key" onclick="pressKey(5)">5</button>
+                    <button class="key" onclick="pressKey(6)">6</button>
+                    <button class="key" onclick="pressKey(7)">7</button>
+                    <button class="key" onclick="pressKey(8)">8</button>
+                    <button class="key" onclick="pressKey(9)">9</button>
+                    <button class="key del" onclick="pressDel()">DEL</button>
+                    <button class="key" onclick="pressKey(0)">0</button>
+                    
+                    <button id="btn-call" class="key act" onclick="submitDial()" style="background:var(--success); color:white;">📞</button>
+                    <button id="btn-ok" class="key act" onclick="submitFinalCode()" style="display:none;">OK</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="overlay-final" class="modal-overlay">
+        <div class="modal">
+            <h2 id="final-title" style="font-size:2rem; margin:0 0 10px 0;"></h2>
+            <p id="final-text" style="color:#cbd5e1; line-height:1.6;"></p>
+            <button class="btn-primary" onclick="window.location.href='index.html'">RETURN TO MENU</button>
+        </div>
+    </div>
+
+    <div id="overlay-hint" class="modal-overlay">
+        <div class="modal hint">
+            <h2>OPERATOR MESSAGE</h2>
+            <p style="color:#cbd5e1; margin-bottom:5px;">"We didn't get all the details."</p>
+            <p style="color:#fff; font-size:1.2rem; margin: 20px 0; border:1px solid var(--warning); padding:10px;">
+                MISSING INFO: <br>
+                <span id="hint-text" style="font-weight:bold; color:var(--warning)">...</span>
+            </p>
+            <button class="btn-primary" onclick="resumeCall()">RESUME CALL (+2 MIN)</button>
+        </div>
+    </div>
+    
+    <div id="dev-menu">
+        <h3>/// ADMIN PANEL ///</h3>
+        <button class="dev-btn" onclick="endGame(true)">> DEBUG: FORCE SUCCESS</button>
+        <button class="dev-btn" onclick="showNextHint()">> DEBUG: FORCE HINT</button>
+        <button class="dev-btn" onclick="location.reload()">> RESTART LEVEL</button>
+        <div class="close-dev" onclick="document.getElementById('dev-menu').classList.remove('visible')">[ CLOSE PANEL ]</div>
+    </div>
+    
+    <div id="transition-overlay">
+    <div class="loader-spinner"></div>
+    <div style="font-family:var(--font-mono); color:var(--primary); letter-spacing:3px; font-size:1.2rem;">
+        ACCESSING FIELD DATA...
+    </div>
+</div>
+
+    <script src="script_call.js"></script>
+</body>
+</html>

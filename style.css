@@ -1,0 +1,645 @@
+:root {
+    --primary: #0ea5e9;       /* Bleu Médical Vif */
+    --primary-glow: #0ea5e980; 
+    --alert: #ef4444;         /* Rouge Urgence */
+    --success: #10b981;       /* Vert Stable */
+    --bg-deep: #020617;       /* Fond quasi noir */
+    --glass: rgba(15, 23, 42, 0.85); /* Effet verre fumé */
+    --border: rgba(14, 165, 233, 0.3);
+    
+    --font-ui: 'Rajdhani', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+
+body {
+    margin: 0; padding: 0;
+    background-color: var(--bg-deep);
+    color: #e2e8f0;
+    font-family: var(--font-ui);
+    height: 100vh; width: 100vw;
+    overflow: hidden;
+    /* CENTRAGE ABSOLU DU BODY */
+    display: flex; justify-content: center; align-items: center;
+}
+
+/* --- LE FOND GRILLE 3D --- */
+.world {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    overflow: hidden; z-index: 0; perspective: 1000px;
+    background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+}
+
+.grid-floor {
+    position: absolute; width: 200%; height: 200%;
+    top: -50%; left: -50%;
+    background-image: 
+        linear-gradient(rgba(14, 165, 233, 0.15) 1px, transparent 1px), 
+        linear-gradient(90deg, rgba(14, 165, 233, 0.15) 1px, transparent 1px);
+    background-size: 60px 60px;
+    transform: rotateX(60deg);
+    animation: gridMove 20s linear infinite;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 40%, rgba(0,0,0,0.5) 100%);
+}
+
+@keyframes gridMove { 
+    0% { transform: rotateX(60deg) translateY(0); } 
+    100% { transform: rotateX(60deg) translateY(60px); } 
+}
+
+.vignette {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(circle, transparent 40%, #020617 100%);
+    pointer-events: none; z-index: 1;
+}
+
+.scanlines {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+    background-size: 100% 4px;
+    pointer-events: none; z-index: 2; opacity: 0.3;
+}
+
+/* --- CONTAINER TABLETTE / IPAD --- */
+.ipad-container {
+    position: relative; z-index: 10;
+    width: 95%; max-width: 900px; height: 92%;
+    display: flex; flex-direction: column;
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 0 50px rgba(14, 165, 233, 0.15);
+    overflow: hidden;
+    margin: auto; /* Sécurité pour le centrage */
+}
+
+/* Header */
+.top-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 25px; border-bottom: 1px solid var(--border);
+    background: rgba(2, 6, 23, 0.6);
+}
+.brand { font-size: 1.4rem; font-weight: 700; letter-spacing: 2px; color: var(--primary); text-shadow: 0 0 15px var(--primary-glow); }
+.brand span { color: #fff; }
+.status-badge { font-family: var(--font-mono); font-size: 0.9rem; color: var(--success); background: rgba(16, 185, 129, 0.1); padding: 5px 10px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+/* --- CONTENU --- */
+.content-area {
+    flex: 1; display: flex; flex-direction: column;
+    padding: 20px; position: relative;
+    /* Centrage du contenu interne */
+    align-items: center; 
+}
+
+/* JEU CARTE & MONITEUR */
+.monitor {
+    flex: 1; width: 100%; /* Prend toute la largeur dispo */
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative; margin-bottom: 20px;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+}
+
+.word-box { 
+    text-align: center; 
+    z-index: 5; 
+    width: 100%; /* Force le texte à se centrer sur toute la largeur */
+}
+.target-word { font-family: var(--font-mono); font-size: 4rem; margin: 0; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.3); letter-spacing: -2px; }
+.input-code { font-family: var(--font-mono); font-size: 3rem; color: var(--primary); margin-top: 15px; letter-spacing: 10px; }
+
+/* BARRE DE STRESS */
+.stress-bar-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: #1e293b; }
+.stress-bar { 
+    height: 100%; 
+    background: var(--primary); 
+    width: 100%; 
+    transition: width 0.1s linear; 
+    box-shadow: 0 0 15px var(--primary);
+    transform-origin: left;
+}
+.stress-bar.critical { background: var(--alert); box-shadow: 0 0 20px var(--alert); }
+
+/* CLAVIER IPAD */
+.numpad-wrapper { 
+    flex: 0 0 auto; width: 100%; 
+    display: flex; justify-content: center; 
+}
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; max-width: 400px; }
+.key {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);
+    color: #fff; font-size: 1.5rem; padding: 20px 0; border-radius: 8px;
+    font-family: var(--font-mono); cursor: pointer; transition: 0.2s;
+    touch-action: manipulation;
+}
+.key:active { background: var(--primary); color: #000; transform: scale(0.95); }
+.key.act { border-color: var(--success); color: var(--success); }
+.key.act:active { background: var(--success); color: #000; }
+.key.del { border-color: var(--alert); color: var(--alert); }
+
+/* FOOTER VITALS */
+.footer-vitals {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 15px 25px; border-top: 1px solid var(--border);
+    background: rgba(0,0,0,0.4);
+}
+.bpm-display { font-family: var(--font-mono); font-size: 1.5rem; color: var(--success); display: flex; align-items: center; gap: 10px; }
+.heart-anim { color: var(--alert); animation: beat 1s infinite; }
+
+@keyframes beat { 0%, 100% { transform: scale(1); opacity: 0.8; } 15% { transform: scale(1.2); opacity: 1; } }
+
+/* ANIMATION ALERTE ROUGE (REMISE EN PLACE) */
+@keyframes criticalFlash { 
+    0% { border-color: var(--border); box-shadow: 0 0 50px rgba(14, 165, 233, 0.15); } 
+    100% { border-color: var(--alert); box-shadow: 0 0 50px rgba(239, 68, 68, 0.5), inset 0 0 50px rgba(239, 68, 68, 0.2); } 
+}
+.critical-state .ipad-container { 
+    animation: criticalFlash 0.5s infinite alternate; 
+}
+
+/* MODALS */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 100;
+    display: flex; justify-content: center; align-items: center;
+    visibility: hidden; opacity: 0; transition: 0.3s;
+}
+.modal-overlay.visible { visibility: visible; opacity: 1; }
+.modal {
+    background: #0f172a; border: 2px solid var(--primary); padding: 40px;
+    text-align: center; max-width: 500px; width: 90%; border-radius: 12px;
+    box-shadow: 0 0 50px rgba(14, 165, 233, 0.3);
+}
+.btn-primary {
+    background: var(--primary); color: #000; border: none; padding: 15px 40px;
+    font-size: 1.2rem; font-weight: 800; margin-top: 20px; cursor: pointer;
+    text-transform: uppercase; border-radius: 4px; letter-spacing: 1px;
+}
+
+/* MENU DÉVELOPPEUR */
+#dev-menu {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.95); border: 2px solid #ffff00;
+    padding: 20px; z-index: 200; width: 300px;
+    display: none; flex-direction: column; gap: 10px;
+    font-family: 'Courier New', monospace;
+    box-shadow: 0 0 50px rgba(255, 255, 0, 0.2);
+}
+#dev-menu.visible { display: flex; }
+#dev-menu h3 { color: #ffff00; margin: 0 0 10px 0; text-align: center; border-bottom: 1px dashed #ffff00; padding-bottom: 5px; }
+.dev-btn {
+    background: #333; color: #ffff00; border: 1px solid #ffff00;
+    padding: 10px; cursor: pointer; text-align: left; font-weight: bold;
+}
+.dev-btn:hover { background: #ffff00; color: #000; }
+.close-dev { text-align: center; font-size: 0.8rem; color: #666; cursor: pointer; margin-top: 10px; }
+
+/* Styles pour enigme_call.html (Téléphone) */
+.phone-interface {
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; animation: fadeIn 0.5s ease;
+}
+.phone-interface.active { display: flex; }
+.call-status { font-size: 1.5rem; color: #94a3b8; letter-spacing: 2px; margin-bottom: 20px; text-transform: uppercase; text-align: center; }
+.call-timer { font-size: 4rem; font-family: var(--font-mono); color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.2); margin-bottom: 20px; text-align: center; }
+.dial-display { font-size: 3rem; font-family: var(--font-mono); color: var(--primary); border-bottom: 2px solid var(--border); padding: 10px 30px; min-width: 200px; text-align: center; margin-bottom: 30px; }
+.wave-container { display: flex; gap: 5px; height: 30px; align-items: center; margin-bottom: 30px; justify-content: center; }
+.wave-bar { width: 6px; background: var(--success); animation: wave 1s infinite ease-in-out; }
+.wave-bar:nth-child(1) { height: 10px; animation-delay: 0.0s; }
+.wave-bar:nth-child(2) { height: 20px; animation-delay: 0.1s; }
+.wave-bar:nth-child(3) { height: 30px; animation-delay: 0.2s; }
+.wave-bar:nth-child(4) { height: 20px; animation-delay: 0.3s; }
+.wave-bar:nth-child(5) { height: 10px; animation-delay: 0.4s; }
+@keyframes wave { 0%, 100% { height: 10px; opacity: 0.5; } 50% { height: 30px; opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ... (Garder tout le CSS précédent) ... */
+
+/* --- AJOUTS V3 : TRANSITION & RACCROCHER --- */
+
+/* Écran de connexion intermédiaire */
+#screen-connecting {
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%;
+}
+.connecting-text {
+    font-size: 2rem; color: var(--primary); letter-spacing: 5px;
+    animation: blink 1s infinite; margin-bottom: 20px;
+}
+.loader-bar {
+    width: 200px; height: 4px; background: rgba(14, 165, 233, 0.2);
+    border-radius: 2px; overflow: hidden; position: relative;
+}
+.loader-fill {
+    position: absolute; top: 0; left: 0; height: 100%; width: 0%;
+    background: var(--primary);
+    animation: load 2.5s ease-in-out forwards; /* Durée de l'anim */
+}
+
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+@keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
+
+/* Bouton Raccrocher (Sur l'écran tactile) */
+.btn-hangup-screen {
+    margin-top: 20px;
+    background: transparent; border: 1px solid var(--alert); color: var(--alert);
+    padding: 10px 20px; border-radius: 6px; font-family: var(--font-ui);
+    font-weight: bold; cursor: pointer; transition: 0.2s;
+    display: flex; align-items: center; gap: 10px;
+}
+.btn-hangup-screen:hover { background: var(--alert); color: white; }
+.btn-hangup-screen:active { transform: scale(0.95); }
+
+/* Ajustement pour que l'écran d'appel prenne bien la place */
+#screen-active-call {
+    display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%;
+}
+
+/* ... (Garder tout le code précédent) ... */
+
+/* --- AJOUT V4 : MODAL INDICE (HINT) --- */
+.modal.hint {
+    border-color: var(--warning, #f59e0b); /* Orange */
+    box-shadow: 0 0 50px rgba(245, 158, 11, 0.3);
+}
+.modal.hint h2 { color: var(--warning, #f59e0b); }
+.modal.hint .btn-primary {
+    background: var(--warning, #f59e0b); color: #000;
+}
+.modal.hint .btn-primary:hover {
+    background: #fff; box-shadow: 0 0 20px var(--warning, #f59e0b);
+}
+
+/* Variable Warning si pas définie */
+:root {
+    /* ... vos variables existantes ... */
+    --warning: #f59e0b; 
+}
+
+/* ... (Garder tout le CSS précédent) ... */
+
+/* --- AJOUTS V5 : BOUTONS D'APPEL --- */
+
+.call-actions {
+    display: flex; gap: 20px; justify-content: center; margin-top: 30px;
+    width: 100%;
+}
+
+.btn-action-round {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    background: transparent; border: none; cursor: pointer;
+    color: #fff; font-family: var(--font-ui); font-size: 0.9rem;
+    transition: transform 0.2s;
+}
+.btn-action-round:active { transform: scale(0.95); }
+
+.icon-circle {
+    width: 60px; height: 60px; border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 1.5rem; border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1); transition: 0.2s;
+}
+
+/* Bouton Raccrocher (Rouge) */
+.btn-action-round.hangup .icon-circle {
+    background: rgba(239, 68, 68, 0.2); border-color: var(--alert); color: var(--alert);
+}
+.btn-action-round.hangup:hover .icon-circle {
+    background: var(--alert); color: white;
+}
+
+/* Bouton Clavier (Bleu/Neutre) */
+.btn-action-round.keypad .icon-circle {
+    background: rgba(14, 165, 233, 0.2); border-color: var(--primary); color: var(--primary);
+}
+.btn-action-round.keypad:hover .icon-circle {
+    background: var(--primary); color: white;
+}
+.btn-action-round.keypad.active .icon-circle {
+    background: var(--primary); color: white; box-shadow: 0 0 15px var(--primary);
+}
+
+/* ... (Garder tout le code précédent) ... */
+
+/* --- AJOUT V6 : TRANSITION ENTRE NIVEAUX --- */
+#transition-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #020617; /* Fond noir profond */
+    z-index: 9999;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; /* Invisible par défaut */
+    transition: opacity 0.5s ease; /* Apparition fluide */
+}
+
+#transition-overlay.active {
+    opacity: 1; pointer-events: all;
+}
+
+.loader-spinner {
+    width: 60px; height: 60px;
+    border: 4px solid rgba(14, 165, 233, 0.2);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.2);
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- AJOUT V7 : TRIAGE DASHBOARD (ÉTAPE 3) --- */
+
+.triage-container {
+    display: flex; 
+    flex-direction: column; 
+    /* CHANGEMENT ICI : On force à prendre tout l'espace dispo */
+    flex: 1; 
+    width: 100%; 
+    height: 100%;
+    gap: 15px;
+    overflow: hidden; /* Empêche de déborder */
+}
+
+/* Onglets des victimes */
+.patient-tabs {
+    display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;
+    flex-shrink: 0; /* Empêche les onglets de s'écraser */
+}
+.tab-btn {
+    flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    color: #64748b; padding: 15px 5px; font-family: var(--font-ui); font-weight: bold;
+    cursor: pointer; transition: 0.2s; min-width: 80px; text-align: center;
+    border-radius: 6px; position: relative;
+}
+.tab-btn.active {
+    background: rgba(14, 165, 233, 0.2); border-color: var(--primary); color: #fff;
+    box-shadow: 0 0 15px rgba(14, 165, 233, 0.1);
+}
+.tab-indicator {
+    position: absolute; top: 5px; right: 5px; width: 8px; height: 8px;
+    border-radius: 50%; background: #334155;
+}
+
+/* Fiche Patient */
+.patient-file {
+    /* CHANGEMENT ICI : Flex 1 force la boite à prendre tout l'espace restant */
+    flex: 1; 
+    background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; padding: 20px; 
+    display: flex; flex-direction: column;
+    position: relative; 
+    overflow-y: auto; /* Scroll si vraiment trop de texte */
+}
+
+.patient-id {
+    font-size: 1.5rem; color: var(--primary); border-bottom: 1px solid var(--border);
+    padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between;
+    flex-shrink: 0;
+}
+.vitals-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;
+    flex-shrink: 0;
+}
+.vital-box {
+    background: rgba(255,255,255,0.03); padding: 10px; border-radius: 4px;
+}
+.vital-label { font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; }
+.vital-value { font-family: var(--font-mono); font-size: 1.1rem; color: #fff; margin-top: 5px; }
+
+.observation-text {
+    font-style: italic; color: #cbd5e1; line-height: 1.5;
+    border-left: 3px solid var(--primary); padding-left: 15px; margin-bottom: 20px;
+    /* Le texte prend la place dispo mais ne pousse pas trop */
+    flex-grow: 1; 
+}
+
+/* Zone de décision (Boutons couleurs) */
+.decision-panel {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; 
+    /* marginTop auto colle les boutons tout en bas de la boite */
+    margin-top: auto; 
+    flex-shrink: 0;
+}
+.tag-btn {
+    padding: 20px 5px; border: none; cursor: pointer; border-radius: 6px;
+    font-weight: 800; text-transform: uppercase; color: rgba(0,0,0,0.5);
+    transition: transform 0.2s, filter 0.2s;
+    font-family: var(--font-ui); text-align: center;
+}
+.tag-btn:hover { filter: brightness(1.2); color: #000; }
+.tag-btn.selected { transform: scale(1.05); color: #000; box-shadow: 0 0 20px rgba(0,0,0,0.5); border: 2px solid #fff; }
+
+.tag-green { background: #22c55e; }
+.tag-yellow { background: #eab308; }
+.tag-red { background: #ef4444; }
+.tag-black { background: #475569; color: #fff; }
+
+/* Bouton validation finale */
+.submit-triage {
+    margin-top: 15px; width: 100%; padding: 15px;
+    background: var(--primary); color: #000; font-weight: bold; border: none;
+    cursor: pointer; font-family: var(--font-ui); font-size: 1.1rem;
+    letter-spacing: 2px; text-transform: uppercase; clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px);
+    flex-shrink: 0;
+}
+.submit-triage:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
+
+/* ... (Garder tout le code précédent) ... */
+
+/* --- AJOUT V8 : INTERACTIVE VITALS (SCANNER) --- */
+
+/* La case de signe vital devient un bouton interactif */
+.vital-box {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    padding: 15px; border-radius: 6px; cursor: pointer;
+    transition: all 0.2s; position: relative; overflow: hidden;
+    min-height: 80px; display: flex; flex-direction: column; justify-content: center;
+}
+.vital-box:hover {
+    background: rgba(14, 165, 233, 0.1); border-color: var(--primary);
+}
+.vital-box.revealed {
+    cursor: default; background: rgba(0,0,0,0.3); border-color: var(--success);
+}
+.vital-box.scanning {
+    pointer-events: none; border-color: var(--warning);
+}
+
+.vital-label { 
+    font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;
+}
+.vital-value { 
+    font-family: var(--font-mono); font-size: 1.1rem; color: #fff; font-weight: bold;
+}
+
+/* Texte par défaut "TAP TO CHECK" */
+.tap-hint {
+    font-size: 0.8rem; color: var(--primary); display: flex; align-items: center; gap: 5px;
+    animation: pulseText 2s infinite;
+}
+@keyframes pulseText { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
+/* Barre de chargement du scan */
+.scan-bar {
+    position: absolute; bottom: 0; left: 0; height: 3px; width: 0%;
+    background: var(--warning); transition: width 2s linear;
+}
+
+/* Animation ECG (Ligne de coeur) */
+.ecg-line {
+    display: none; height: 20px; width: 100%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 100" preserveAspectRatio="none"><path d="M0,50 L20,50 L30,20 L40,80 L50,50 L100,50" stroke="%2322c55e" stroke-width="2" fill="none"/></svg>');
+    background-size: 50px 100%;
+    animation: ecgMove 1s infinite linear;
+    margin-top: 5px;
+}
+@keyframes ecgMove { from { background-position: 0 0; } to { background-position: -50px 0; } }
+
+/* Pour un pouls plat (Asystolie) */
+.ecg-flat {
+    display: none; height: 2px; width: 100%; background: var(--alert); margin-top: 15px;
+}
+
+/* ... (Garder tout le code précédent) ... */
+
+/* --- AJOUT V9 : ACTION D'URGENCE (QCM) --- */
+
+.action-required-panel {
+    display: none; /* Caché par défaut */
+    margin-top: 15px;
+    padding: 15px;
+    border: 2px solid var(--alert);
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 8px;
+    animation: pulseAlert 1s infinite alternate;
+}
+@keyframes pulseAlert { 
+    from { box-shadow: 0 0 10px rgba(239, 68, 68, 0.1); } 
+    to { box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); } 
+}
+
+.action-title {
+    color: var(--alert); font-weight: 800; text-transform: uppercase; 
+    margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
+}
+
+.action-options {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+}
+
+.btn-action-medical {
+    background: rgba(0,0,0,0.4); border: 1px solid var(--border);
+    color: #fff; padding: 15px 5px; cursor: pointer;
+    font-family: var(--font-ui); font-size: 0.9rem; font-weight: bold;
+    text-transform: uppercase; transition: 0.2s;
+}
+.btn-action-medical:hover {
+    background: var(--primary); color: #000; border-color: var(--primary);
+}
+
+/* ... (Garder tout le code précédent) ... */
+
+/* --- MODIF V10 : TIMER D'ACTION --- */
+
+.action-required-panel {
+    display: none;
+    margin-top: 15px;
+    padding: 15px;
+    border: 2px solid var(--alert);
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 8px;
+    animation: pulseAlert 1s infinite alternate;
+    position: relative;
+    overflow: hidden; /* Pour la barre de temps */
+}
+
+.action-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 15px;
+}
+
+.action-title {
+    color: var(--alert); font-weight: 800; text-transform: uppercase; 
+    margin: 0; display: flex; align-items: center; gap: 10px;
+}
+
+.action-timer-display {
+    font-family: var(--font-mono); font-size: 1.5rem; color: var(--alert);
+    font-weight: bold; background: rgba(0,0,0,0.5); padding: 2px 8px; border-radius: 4px;
+}
+
+/* Barre de temps qui diminue */
+.action-timer-bar {
+    position: absolute; top: 0; left: 0; height: 4px; width: 100%;
+    background: var(--alert);
+    transform-origin: left;
+    /* L'animation sera gérée par JS pour plus de précision ou CSS si simple */
+}
+
+/* ... (Reste des boutons actions inchangé) ... */
+
+/* ... (GARDEZ TOUT VOTRE CSS EXISTANT DU DÉBUT JUSQU'À LA FIN) ... */
+
+/* --- AJOUT V11 : ÉCRAN DE VICTOIRE (FINALE) --- */
+
+.victory-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(2, 6, 23, 0.95);
+    z-index: 2000;
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    backdrop-filter: blur(10px);
+    opacity: 0; transition: opacity 0.5s ease;
+}
+.victory-overlay.visible { display: flex; opacity: 1; }
+
+.victory-title {
+    font-size: 3rem; font-weight: 900; color: #fff;
+    text-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+    letter-spacing: 5px; margin-bottom: 20px;
+    transform: scale(0.5); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    text-align: center;
+}
+
+.victory-rank {
+    font-size: 6rem; font-weight: 900; color: var(--success);
+    border: 5px solid var(--success); border-radius: 50%;
+    width: 180px; height: 180px; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 50px rgba(34, 197, 94, 0.4), inset 0 0 20px rgba(34, 197, 94, 0.4);
+    margin: 20px 0;
+    background: rgba(0,0,0,0.5);
+    transform: rotate(-15deg) scale(0);
+    animation: stamp 0.5s 0.5s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.victory-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin: 30px 0;
+    opacity: 0; animation: fadeIn 1s 1s forwards;
+}
+.stat-item { text-align: center; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+.stat-val { font-size: 2rem; font-family: var(--font-mono); color: #fff; font-weight: bold; display: block; }
+.stat-label { font-size: 0.8rem; color: #94a3b8; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px; display: block; }
+
+.btn-finish {
+    background: #fff; color: #000; padding: 15px 50px; font-size: 1.2rem;
+    font-weight: 800; border: none; cursor: pointer; border-radius: 50px;
+    box-shadow: 0 0 30px rgba(255,255,255,0.3);
+    opacity: 0; animation: slideUp 0.5s 1.5s forwards;
+    transition: transform 0.2s;
+    text-decoration: none;
+}
+.btn-finish:hover { transform: scale(1.1); }
+
+/* Confettis */
+.confetti {
+    position: absolute; width: 10px; height: 10px; background: var(--success);
+    top: -10px; z-index: 1999; pointer-events: none;
+}
+
+@keyframes popIn { to { transform: scale(1); } }
+@keyframes stamp { to { transform: rotate(-15deg) scale(1); } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+@keyframes fadeIn { to { opacity: 1; } }

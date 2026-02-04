@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Equipment Protocol - Step 1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="world"><div class="grid-floor"></div></div>
+    <div class="vignette"></div>
+    <div class="scanlines"></div>
+
+    <div class="ipad-container" id="game-ui">
+        <header class="top-bar">
+            <button onclick="window.location.href='index.html'" style="background:none; border:1px solid var(--border); color:var(--primary); padding:5px 15px; border-radius:4px; font-family:var(--font-ui); cursor:pointer;">
+                ← MENU
+            </button>
+            <div class="brand">PROTOCOL <span>ACTIVE</span></div>
+            <div class="status-badge">STEP 1/2</div>
+        </header>
+
+        <div class="content-area">
+            <div class="monitor">
+                <div class="word-box">
+                    <p style="color:var(--primary); letter-spacing:2px; margin-bottom:10px; font-size:0.9rem;">IDENTIFY EQUIPMENT</p>
+                    <h1 id="target-word" class="target-word">LOADING...</h1>
+                    <div id="input-display" class="input-code">_ _</div>
+                </div>
+                <div class="stress-bar-container">
+                    <div id="progress-bar" class="stress-bar"></div>
+                </div>
+            </div>
+
+            <div id="status-message" style="text-align:center; color:#64748b; margin-bottom:15px; height:20px;">SYSTEM READY</div>
+
+            <div class="numpad-wrapper">
+                <div class="numpad">
+                    <button class="key" onclick="addNumber(1)">1</button>
+                    <button class="key" onclick="addNumber(2)">2</button>
+                    <button class="key" onclick="addNumber(3)">3</button>
+                    <button class="key" onclick="addNumber(4)">4</button>
+                    <button class="key" onclick="addNumber(5)">5</button>
+                    <button class="key" onclick="addNumber(6)">6</button>
+                    <button class="key" onclick="addNumber(7)">7</button>
+                    <button class="key" onclick="addNumber(8)">8</button>
+                    <button class="key" onclick="addNumber(9)">9</button>
+                    <button class="key del" onclick="clearInput()">DEL</button>
+                    <button class="key" onclick="addNumber(0)">0</button>
+                    <button class="key act" onclick="submitAnswer()">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer-vitals">
+            <div class="bpm-display">
+                <span class="heart-anim">♥</span> <span id="bpm-text">80</span> BPM
+            </div>
+            <div style="font-size:0.8rem; color:#64748b; text-align:right;">
+                PATIENT STATUS<br><span style="color:var(--success)" id="patient-status">STABLE</span>
+            </div>
+        </footer>
+    </div>
+
+    <div id="overlay-modal" class="modal-overlay visible">
+        <div class="modal">
+            <h2 id="modal-title" style="color:var(--primary); font-size:2rem; margin:0 0 10px 0;">EMERGENCY CALL</h2>
+            <p id="modal-desc" style="color:#cbd5e1; line-height:1.6;">
+                Mass casualty incident reported.<br>
+                Step 1: Identify Medical Equipment.
+            </p>
+            <button id="modal-btn" class="btn-primary" onclick="startGame()">ACCEPT MISSION</button>
+        </div>
+    </div>
+    
+    <div id="dev-menu">
+        <h3>/// ADMIN PANEL ///</h3>
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <button class="dev-btn" style="flex:1" onclick="window.location.href='enigme_cards.html'">GO TO STEP 1</button>
+            <button class="dev-btn" style="flex:1" onclick="window.location.href='enigme_call.html'">GO TO STEP 2</button>
+        </div>
+        <hr style="border-color:#ffff00; width:100%; opacity:0.3; margin: 10px 0;">
+        <button class="dev-btn" onclick="devWinWord()">> DEBUG: SKIP WORD</button>
+        <button class="dev-btn" onclick="devWinLevel()">> DEBUG: INSTANT WIN</button>
+        <button class="dev-btn" onclick="location.reload()">> RESTART LEVEL</button>
+        <div class="close-dev" onclick="document.getElementById('dev-menu').classList.remove('visible')">[ CLOSE PANEL ]</div>
+    </div>
+
+    <div id="transition-overlay">
+        <div class="loader-spinner"></div>
+        <div style="font-family:var(--font-mono); color:var(--primary); letter-spacing:3px; font-size:1.2rem;">
+            ESTABLISHING SECURE LINE...
+        </div>
+    </div>
+
+    <script src="script_cards.js"></script>
+</body>
+</html>
