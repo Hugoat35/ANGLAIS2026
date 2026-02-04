@@ -643,3 +643,53 @@ body {
 @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
 @keyframes fadeIn { to { opacity: 1; } }
+
+/* ... (Garder tout le CSS précédent) ... */
+
+/* --- CORRECTIF V12 : CLAVIER COMPACT (POUR ÉVITER LE DÉBORDEMENT) --- */
+
+/* On cible spécifiquement le clavier de la page d'appel via son ID */
+#numpad-area {
+    margin-top: 10px !important; /* Réduit l'écart avec le haut */
+    flex-shrink: 0; /* Empêche le clavier de s'écraser bizarrement */
+    padding-bottom: 5px;
+}
+
+#numpad-area .numpad {
+    gap: 8px; /* Rapproche les touches (au lieu de 15px) */
+    max-width: 350px; /* Limite la largeur pour que ce soit plus joli */
+}
+
+#numpad-area .key {
+    padding: 12px 0; /* Touches moins hautes (au lieu de 20px) */
+    font-size: 1.3rem; /* Texte légèrement plus petit */
+    height: auto; /* Laisse la hauteur s'adapter */
+}
+
+/* Ajustement pour s'assurer que le bouton OK est bien visible */
+#numpad-area .key.act {
+    background: rgba(16, 185, 129, 0.2); /* Fond vert léger pour mieux le voir */
+    border-color: var(--success);
+}
+
+/* S'assure que la zone de contenu permet de tout afficher sans couper */
+.content-area {
+    overflow-y: auto; /* Ajoute un scroll si l'écran est vraiment trop petit */
+    justify-content: space-between; /* Répartit mieux l'espace vertical */
+}
+
+/* Ajustement de la taille du Timer pour gagner de la place */
+.call-timer {
+    font-size: 3rem; /* Réduit de 4rem à 3rem */
+    margin-bottom: 10px;
+}
+
+/* Ajustement des boutons ronds (Keypad/End Call) pour gagner de la place */
+.call-actions {
+    margin-top: 15px; /* Réduit de 30px à 15px */
+    margin-bottom: 10px;
+}
+.icon-circle {
+    width: 50px; height: 50px; /* Réduit de 60px */
+    font-size: 1.2rem;
+}
