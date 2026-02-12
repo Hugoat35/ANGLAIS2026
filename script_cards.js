@@ -1,6 +1,6 @@
 // --- CONFIGURATION ---
-const VOCAB_TIME = 15; // Remis à 15s (plus jouable) ou 10 selon votre choix
-const WINNING_SCORE = 5;
+const VOCAB_TIME = 12; // MODIFIÉ : 12 secondes par mot
+const WINNING_SCORE = 8; // MODIFIÉ : 8 mots corrects d'affilée requis
 
 // --- LISTE DE MOTS ---
 const gameData = [
@@ -67,6 +67,8 @@ document.addEventListener('keydown', function(e) {
 });
 
 function startGame() {
+    AudioEngine.init(); // Important !
+    AudioEngine.playRandomChain('drone_',10);
     score = 0;
     stepErrors = 0;
     availableWords = [...gameData];
@@ -81,6 +83,7 @@ function startGame() {
 }
 
 function nextTurn() {
+    // Condition de victoire
     if (score >= WINNING_SCORE) {
         victory();
         return;
@@ -88,14 +91,20 @@ function nextTurn() {
     
     document.body.classList.remove('critical-state');
     
+    // Mélange et sélection
     if (availableWords.length === 0) availableWords = [...gameData];
     const idx = Math.floor(Math.random() * availableWords.length);
     const data = availableWords[idx];
     availableWords.splice(idx, 1);
     
+    // Affichage
     displayWordEffect(data.word);
     wordDisplay.dataset.answer = data.code;
     
+    // Mise à jour UI du score (Série en cours)
+    statusMessage.innerText = `CURRENT STREAK: ${score} / ${WINNING_SCORE}`;
+    statusMessage.style.color = "#64748b"; // Couleur neutre
+
     currentInput = "";
     inputDisplay.innerText = "_ _";
     startTimer();
@@ -121,6 +130,7 @@ function startTimer() {
             document.body.classList.add('critical-state');
         }
         if(timeLeft < 0) {
+            // TEMPS ÉCOULÉ = GAME OVER (Ou reset streak ? Ici on garde Game Over pour le stress du temps)
             triggerFail("TIME EXPIRED");
         }
     }, 1000);
@@ -137,6 +147,7 @@ function addNumber(num) {
 
     if (!isGameRunning) return;
     if (currentInput.length < 2) {
+        AudioEngine.playClick();
         currentInput += num;
         inputDisplay.innerText = currentInput;
     }
@@ -149,16 +160,41 @@ function clearInput() {
 
 function submitAnswer() {
     if (!isGameRunning) return;
+    
+    clearInterval(timerInterval); // On arrête le chrono le temps de vérifier
+
     if (currentInput === wordDisplay.dataset.answer) {
-        clearInterval(timerInterval);
+        AudioEngine.playSuccess();
+        // --- BONNE RÉPONSE ---
         score++;
-        statusMessage.innerText = `ITEM SECURED (${score}/${WINNING_SCORE})`;
+        statusMessage.innerText = `STREAK SECURED: ${score}/${WINNING_SCORE}`;
         statusMessage.style.color = "var(--success)";
+        
+        // Petit délai avant le prochain mot
         setTimeout(nextTurn, 500);
+        
     } else {
-        // COMPTAGE ERREUR
-        stepErrors++;
-        triggerFail("WRONG EQUIPMENT CODE");
+        AudioEngine.playError();
+        // --- MAUVAISE RÉPONSE : RESET DU STREAK ---
+        stepErrors++; // On compte l'erreur pour les stats finales
+        
+        // RESET DU SCORE À ZÉRO
+        score = 0; 
+        
+        // Feedback visuel "cassure"
+        statusMessage.innerText = `WRONG CODE! STREAK BROKEN (0/${WINNING_SCORE})`;
+        statusMessage.style.color = "var(--alert)";
+        inputDisplay.style.color = "var(--alert)";
+        
+        // On fait clignoter l'écran rouge brièvement
+        document.body.classList.add('critical-state');
+        setTimeout(() => document.body.classList.remove('critical-state'), 300);
+
+        // On relance un nouveau mot après 1 seconde pour qu'il réalise son erreur
+        setTimeout(() => {
+            inputDisplay.style.color = "var(--primary)";
+            nextTurn(); 
+        }, 1500);
     }
 }
 
@@ -199,7 +235,7 @@ function triggerFail(reason) {
     if(title && desc && btn) {
         title.innerText = "MISSION FAILED";
         title.style.color = "var(--alert)";
-        desc.innerHTML = `Cause: ${reason}<br>Patient lost. Protocol Failed.`;
+        desc.innerHTML = `Cause: ${reason}<br>Patient condition critical.<br>Protocol Failed.`;
         btn.innerText = "RETRY LEVEL";
         btn.onclick = startGame;
         modalOverlay.classList.add('visible');
@@ -229,6 +265,7 @@ function startBPM() {
     bpmInterval = setInterval(() => {
         let val = currentBPM + Math.floor(Math.random() * 5) - 2;
         el.innerText = val;
+        AudioEngine.playHeartbeat();
     }, 1000);
 }
 
@@ -240,5 +277,6 @@ function devWinWord() {
     nextTurn();
 }
 function devWinLevel() {
+    score = WINNING_SCORE; // Force le score max
     victory(); 
 }

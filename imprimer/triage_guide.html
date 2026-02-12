@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>S.A.V.E. PROTOCOL - FIELD GUIDE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: white;
+            color: #333;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .page-container {
+            max-width: 800px;
+            margin: auto;
+            border: 4px solid #333;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* En-tête */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #0ea5e9; /* Bleu Médical */
+            text-transform: uppercase;
+        }
+        .doc-id {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: bold;
+        }
+
+        /* Titre */
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            background: #f1f5f9;
+            padding: 10px;
+        }
+
+        /* Diagramme logique (Flowchart) */
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .step {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border: 2px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .step-number {
+            background: #333;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .question {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .details {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Résultats (Tags) */
+        .outcome {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 150px;
+            text-align: center;
+        }
+        .tag {
+            padding: 8px;
+            font-weight: 900;
+            color: white;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+        
+        .tag.green { background-color: #22c55e; color: white; }
+        .tag.yellow { background-color: #eab308; color: black; }
+        .tag.red { background-color: #ef4444; color: white; }
+        .tag.black { background-color: #000; color: white; }
+
+        /* Flèches et connecteurs visuels */
+        .arrow-down {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #cbd5e1;
+            font-weight: bold;
+            margin: -10px 0;
+        }
+
+        /* Note de bas de page */
+        .warning-box {
+            margin-top: 40px;
+            border: 2px dashed #ef4444;
+            background: #fef2f2;
+            padding: 15px;
+            color: #b91c1c;
+            font-size: 0.9rem;
+        }
+
+        /* Valeurs de référence */
+        .reference-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        .reference-table th, .reference-table td {
+            border: 1px solid #cbd5e1;
+            padding: 8px;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        .reference-table th { background: #f8fafc; }
+
+    </style>
+</head>
+<body>
+
+    <div class="page-container">
+        
+        <header>
+            <div class="logo">S.A.V.E. <span style="color:#333">Protocol</span></div>
+            <div class="doc-id">
+                REF: EMS-TRIAGE-V4<br>
+                AUTHORIZED PERSONNEL ONLY
+            </div>
+        </header>
+
+        <h1>Mass Casualty Triage Algorithm</h1>
+
+        <div class="flowchart">
+
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <div class="question">ABLE TO WALK?</div>
+                    <div class="details">Can the patient walk towards you when asked?</div>
+                </div>
+                <div class="outcome">
+                    <div style="font-size:0.8rem; font-weight:bold; color:#22c55e;">YES</div>
+                    <div class="tag green">MINOR (GREEN)</div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓ NO</div>
+
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <div class="question">SPONTANEOUS BREATHING?</div>
+                    <div class="details">Is the chest moving? Check after opening airway.</div>
+                </div>
+                <div class="outcome">
+                    <div style="font-size:0.8rem; font-weight:bold; color:#000;">NO</div>
+                    <div class="tag black">DECEASED (BLACK)</div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓ YES</div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <div class="question">RESPIRATORY RATE</div>
+                    <div class="details">Count breaths per minute.</div>
+                </div>
+                <div class="outcome">
+                    <div style="font-size:0.8rem; font-weight:bold; color:#ef4444;">OVER 30 / MIN</div>
+                    <div class="tag red">IMMEDIATE (RED)</div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓ UNDER 30</div>
+
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <div class="question">PERFUSION / PULSE</div>
+                    <div class="details">Check Radial Pulse OR Capillary Refill Time (CRT).</div>
+                </div>
+                <div class="outcome">
+                    <div style="font-size:0.8rem; font-weight:bold; color:#ef4444;">NO RADIAL PULSE<br>OR CRT > 2 SEC</div>
+                    <div class="tag red">IMMEDIATE (RED)</div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓ PULSE PRESENT</div>
+
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <div class="question">MENTAL STATUS</div>
+                    <div class="details">Can patient follow simple commands? (e.g., "Squeeze my hand")</div>
+                </div>
+                <div class="outcome">
+                    <div style="font-size:0.8rem; font-weight:bold; color:#ef4444;">CONFUSED / UNCONSCIOUS</div>
+                    <div class="tag red">IMMEDIATE (RED)</div>
+                </div>
+            </div>
+
+            <div class="arrow-down">↓ ALERT & OBEYS</div>
+
+            <div class="step" style="border-color:#eab308; background:#fefce8;">
+                <div class="step-number" style="background:#eab308; color:black;">✓</div>
+                <div class="step-content">
+                    <div class="question">FINAL ASSESSMENT</div>
+                    <div class="details">Patient is stable but cannot walk (e.g., leg fracture).</div>
+                </div>
+                <div class="outcome">
+                    <div class="tag yellow">DELAYED (YELLOW)</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="warning-box">
+            <strong>⚠ REMINDER:</strong> "Agonal breathing" (occasional gasping) is NOT considered effective breathing. If patient only gasps after airway opening and stops again, tag as <strong>DECEASED</strong>.
+        </div>
+
+        <h3>REFERENCE VALUES</h3>
+        <table class="reference-table">
+            <tr>
+                <th>Measurement</th>
+                <th>Normal Range (Adult)</th>
+                <th>Critical (RED FLAG)</th>
+            </tr>
+            <tr>
+                <td>Respiratory Rate</td>
+                <td>12 - 20 breaths/min</td>
+                <td>> 30 or < 8</td>
+            </tr>
+            <tr>
+                <td>Pulse (Heart Rate)</td>
+                <td>60 - 100 bpm</td>
+                <td>Absent Radial Pulse (Shock)</td>
+            </tr>
+            <tr>
+                <td>Capillary Refill</td>
+                <td>< 2 seconds</td>
+                <td>> 2 seconds (Poor perfusion)</td>
+            </tr>
+        </table>
+
+    </div>
+
+</body>
+</html>

@@ -45,13 +45,21 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Initialisation Stats
+// Initialisation
 window.onload = function() {
     levelStartTime = Date.now();
+    
+    // On initialise l'audio MAIS on ne lance pas le son tout de suite
+    if(typeof AudioEngine !== 'undefined') {
+        AudioEngine.init();
+    }
 };
 
 function pressKey(num) {
     if(screenConnecting.style.display === 'flex') return;
+
+    // Son de clic
+    if(typeof AudioEngine !== 'undefined') AudioEngine.playClick();
 
     if (!isCallActive) {
         if (currentInput.length < 3) {
@@ -68,6 +76,10 @@ function pressKey(num) {
 
 function pressDel() {
     if(screenConnecting.style.display === 'flex') return;
+    
+    // Son de clic
+    if(typeof AudioEngine !== 'undefined') AudioEngine.playClick();
+    
     currentInput = "";
     if (!isCallActive) dialDisplay.innerText = "_ _ _";
     else finalCodeDisplay.innerText = "_ _ _ _";
@@ -78,6 +90,7 @@ function submitDial() {
         triggerConnectionSequence();
     } else {
         // ERREUR NUMÉRO
+        if(typeof AudioEngine !== 'undefined') AudioEngine.playError();
         stepErrors++;
         dialDisplay.style.color = "var(--alert)";
         setTimeout(() => dialDisplay.style.color = "var(--primary)", 500);
@@ -87,17 +100,25 @@ function submitDial() {
 }
 
 function triggerConnectionSequence() {
+    // Sonnerie pendant la connexion
+    if(typeof AudioEngine !== 'undefined') AudioEngine.playRing();
+
     screenDial.style.display = 'none';
     screenConnecting.style.display = 'flex';
     setTimeout(() => {
         screenConnecting.style.display = 'none';
         startCall();
-    }, 2500);
+    }, 2500); // Durée de la "sonnerie"
 }
 
 function startCall() {
     isCallActive = true;
     currentInput = "";
+    
+    // --- C'EST ICI QUE LE SON D'AMBIANCE DÉMARRE ---
+    if(typeof AudioEngine !== 'undefined') {
+        AudioEngine.playAmbience('ambience_call.mp3');
+    }
     
     screenActiveCall.style.display = 'flex';
     btnCall.style.display = 'none';
@@ -110,6 +131,8 @@ function startCall() {
 }
 
 function toggleKeypad() {
+    if(typeof AudioEngine !== 'undefined') AudioEngine.playClick();
+    
     const btn = document.getElementById('btn-toggle-pad');
     if (numpadArea.style.display === 'none') {
         numpadArea.style.display = 'flex';
@@ -121,6 +144,9 @@ function toggleKeypad() {
 }
 
 function hangUpCall() {
+    // ON COUPE L'AMBIANCE SI ON RACCROCHE
+    if(typeof AudioEngine !== 'undefined') AudioEngine.stopAmbience();
+
     clearInterval(callTimerInterval);
     isCallActive = false;
     currentInput = "";
@@ -171,12 +197,16 @@ function handleTimeOut() {
 
 function showNextHint() {
     clearInterval(callTimerInterval);
+    // Son d'alerte ou erreur
+    if(typeof AudioEngine !== 'undefined') AudioEngine.playError();
+    
     hintText.innerText = HINTS[hintIndex];
     modalHint.classList.add('visible');
     hintIndex++;
 }
 
 function resumeCall() {
+    if(typeof AudioEngine !== 'undefined') AudioEngine.playClick();
     modalHint.classList.remove('visible');
     startTimer();
 }
@@ -186,6 +216,8 @@ function submitFinalCode() {
         endGame(true);
     } else {
         // ERREUR CODE
+        if(typeof AudioEngine !== 'undefined') AudioEngine.playError();
+        
         stepErrors++;
         finalCodeDisplay.style.color = "var(--alert)";
         setTimeout(() => finalCodeDisplay.style.color = "#fff", 500);
@@ -196,8 +228,11 @@ function submitFinalCode() {
 
 function endGame(success, reason) {
     clearInterval(callTimerInterval);
+    if(typeof AudioEngine !== 'undefined') AudioEngine.stopAmbience();
     
     if (success) {
+        if(typeof AudioEngine !== 'undefined') AudioEngine.playSuccess();
+
         // --- SAUVEGARDE DES STATS ÉTAPE 2 ---
         const duration = Date.now() - levelStartTime;
         localStorage.setItem('stats_step2', JSON.stringify({
@@ -216,6 +251,8 @@ function endGame(success, reason) {
             window.location.href = "enigme_triage.html";
         }
     } else {
+        if(typeof AudioEngine !== 'undefined') AudioEngine.playError();
+        
         const title = document.getElementById('final-title');
         const text = document.getElementById('final-text');
         title.innerText = "MISSION FAILED";

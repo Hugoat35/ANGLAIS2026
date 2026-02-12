@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EMS TRIAGE FILES - DENSE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@500&family=Caveat:wght@600&display=swap');
+
+        body {
+            background: #e5e5e5;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 11px; /* Police plus petite pour mettre plus d'infos */
+            -webkit-print-color-adjust: exact;
+        }
+
+        .page {
+            background: #fff;
+            width: 210mm;
+            height: 297mm;
+            margin: 0 auto 30px auto;
+            padding: 10mm;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            position: relative;
+            page-break-after: always;
+        }
+
+        @media print {
+            body { background: none; padding: 0; }
+            .page { margin: 0; border: none; width: 100%; height: 100vh; page-break-after: always; }
+        }
+
+        /* HEADER */
+        .header {
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+        .header h1 { font-family: 'Oswald', sans-serif; font-size: 1.5rem; margin: 0; }
+        .header p { margin: 0; color: #666; font-size: 0.8rem; }
+
+        /* LAYOUT */
+        .row { display: flex; gap: 15px; margin-bottom: 10px; }
+        .col { flex: 1; border: 1px solid #999; padding: 5px; }
+        .col-2 { flex: 2; border: 1px solid #999; padding: 5px; }
+
+        .section-header {
+            background: #000; color: #fff;
+            font-family: 'Oswald', sans-serif;
+            padding: 2px 5px;
+            font-size: 0.9rem;
+            margin: -5px -5px 5px -5px;
+        }
+
+        /* FIELDS */
+        .field-group { margin-bottom: 4px; border-bottom: 1px dotted #ccc; padding-bottom: 2px; }
+        .label { font-weight: bold; font-size: 0.7rem; color: #444; text-transform: uppercase; }
+        .data { font-family: 'Courier Prime', monospace; font-size: 0.9rem; }
+        
+        /* HANDWRITTEN OVERLAY */
+        .handwritten {
+            font-family: 'Caveat', cursive;
+            color: #0000aa;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* VITALS BOX (THE TRAP) */
+        .vitals-highlight {
+            border: 3px solid #000;
+            background: #f0f0f0;
+            padding: 10px;
+        }
+
+        .checkbox { display: inline-block; width: 10px; height: 10px; border: 1px solid #000; margin-right: 5px; }
+        .checked { background: #000; }
+
+    </style>
+</head>
+<body>
+
+    <div class="page">
+        <div class="header">
+            <div>
+                <h1>EMS FIELD REPORT</h1>
+                <p>UNIT 42 | INCIDENT #902 | SECTOR: NORTH</p>
+            </div>
+            <div style="text-align:right;">
+                <p>DATE: 2025-10-14</p>
+                <p>TIME: 22:48</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+                <div class="section-header">PATIENT DEMOGRAPHICS</div>
+                <div class="field-group"><span class="label">LAST NAME:</span> <span class="data">JENKINS</span></div>
+                <div class="field-group"><span class="label">FIRST NAME:</span> <span class="data">SARAH L.</span></div>
+                <div class="field-group"><span class="label">DOB:</span> <span class="data">2001-05-12 (24yo)</span></div>
+                <div class="field-group"><span class="label">ADDRESS:</span> <span class="data">42 University Ave, Apt 4B</span></div>
+                <div class="field-group"><span class="label">INSURANCE:</span> <span class="data">Student Health Care #992-A</span></div>
+            </div>
+            <div class="col">
+                <div class="section-header">EMERGENCY CONTACT</div>
+                <div class="field-group"><span class="label">NAME:</span> <span class="data">Jenkins, Martha (Mother)</span></div>
+                <div class="field-group"><span class="label">PHONE:</span> <span class="data">555-0192</span></div>
+                <div class="field-group"><span class="label">RELATION:</span> <span class="data">Parent</span></div>
+                <div class="field-group"><span class="label">NOTIFIED:</span> <span class="data">[ ] YES [X] NO</span></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="section-header">MEDICAL HISTORY</div>
+                <div class="field-group"><span class="label">ALLERGIES:</span> <span class="data">Penicillin, Peanuts</span></div>
+                <div class="field-group"><span class="label">MEDICATIONS:</span> <span class="data">None listed</span></div>
+                <div class="field-group"><span class="label">PAST SURGERY:</span> <span class="data">Appendectomy (2018)</span></div>
+                <div class="field-group"><span class="label">CONDITIONS:</span> <span class="data handwritten">General Anxiety Disorder</span></div>
+            </div>
+        </div>
+
+        <div class="row vitals-highlight">
+            <div class="col-2" style="border:none;">
+                <div class="section-header">PRIMARY ASSESSMENT (VITALS)</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr;">
+                    <div>
+                        <div class="label">RESPIRATION RATE</div>
+                        <div class="handwritten">ELEVATED / FAST</div>
+                    </div>
+                    <div>
+                        <div class="label">PULSE RATE</div>
+                        <div class="handwritten">RAPID (Tachy)</div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <div class="label">BLOOD PRESSURE</div>
+                        <div class="handwritten">100/60</div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <div class="label">SPO2</div>
+                        <div class="handwritten">96%</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col" style="border:none; border-left:2px solid #000;">
+                <div class="label">CONSCIOUSNESS (AVPU)</div>
+                <div>[X] ALERT</div>
+                <div>[ ] VOICE</div>
+                <div>[ ] PAIN</div>
+                <div>[ ] UNRESPONSIVE</div>
+                <br>
+                <div class="label">CHIEF COMPLAINT</div>
+                <div class="handwritten">Leg Pain, Screaming</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="section-header">INJURY / TRAUMA NOTES</div>
+                <p class="data">Patient found seated near debris. Large laceration on Left Thigh. <span class="handwritten">Active bright red bleeding.</span> Clothing torn. Patient is hysterical.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <div class="header">
+            <div><h1>EMS FIELD REPORT</h1><p>UNIT 42 | INCIDENT #902 | SECTOR: IMPACT</p></div>
+            <div style="text-align:right;"><p>TIME: 22:50</p></div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+                <div class="section-header">PATIENT DEMOGRAPHICS</div>
+                <div class="field-group"><span class="label">LAST NAME:</span> <span class="data handwritten">UNKNOWN (DOE)</span></div>
+                <div class="field-group"><span class="label">FIRST NAME:</span> <span class="data handwritten">John</span></div>
+                <div class="field-group"><span class="label">DOB:</span> <span class="data handwritten">Approx 50-55 years old</span></div>
+                <div class="field-group"><span class="label">ADDRESS:</span> <span class="data">N/A</span></div>
+                <div class="field-group"><span class="label">PERSONAL EFFECTS:</span> <span class="data">Black Briefcase, Gold Watch, No Wallet ID</span></div>
+            </div>
+            <div class="col">
+                <div class="section-header">EMERGENCY CONTACT</div>
+                <div class="field-group"><span class="label">NAME:</span> <span class="data">Unknown</span></div>
+                <div class="field-group"><span class="label">PHONE:</span> <span class="data">--</span></div>
+                <div class="field-group"><span class="label">POLICE NOTIFIED:</span> <span class="data">[X] YES [ ] NO</span></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="section-header">MEDICAL HISTORY</div>
+                <div class="field-group"><span class="label">ALERTS:</span> <span class="data">MedicAlert Bracelet: None</span></div>
+                <div class="field-group"><span class="label">POCKET CONTENTS:</span> <span class="data">Beta-Blocker medication found in pocket</span></div>
+            </div>
+        </div>
+
+        <div class="row vitals-highlight">
+            <div class="col-2" style="border:none;">
+                <div class="section-header">PRIMARY ASSESSMENT (VITALS)</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr;">
+                    <div>
+                        <div class="label">RESPIRATION RATE</div>
+                        <div class="handwritten">ABSENT (Apnea)</div>
+                    </div>
+                    <div>
+                        <div class="label">PULSE RATE</div>
+                        <div class="handwritten">ABSENT</div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <div class="label">SKIN</div>
+                        <div class="handwritten">Pale / Cold</div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <div class="label">PUPILS</div>
+                        <div class="handwritten">Fixed / Dilated</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col" style="border:none; border-left:2px solid #000;">
+                <div class="label">CONSCIOUSNESS (AVPU)</div>
+                <div>[ ] ALERT</div>
+                <div>[ ] VOICE</div>
+                <div>[ ] PAIN</div>
+                <div>[X] UNRESPONSIVE</div>
+                <br>
+                <div class="label">ACTION TAKEN</div>
+                <div class="handwritten">Airway Opened. No Effect.</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="section-header">INJURY / TRAUMA NOTES</div>
+                <p class="data">Subject located in center of impact zone. Massive cranial trauma visible. CSF fluid leaking from ears. Spine integrity compromised.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <div class="header">
+            <div><h1>EMS FIELD REPORT</h1><p>UNIT 42 | INCIDENT #902 | SECTOR: PERIMETER</p></div>
+            <div style="text-align:right;"><p>TIME: 22:55</p></div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+                <div class="section-header">PATIENT DEMOGRAPHICS</div>
+                <div class="field-group"><span class="label">LAST NAME:</span> <span class="data">ROSE</span></div>
+                <div class="field-group"><span class="label">FIRST NAME:</span> <span class="data">EMILY J.</span></div>
+                <div class="field-group"><span class="label">DOB:</span> <span class="data">1983-11-02 (42yo)</span></div>
+                <div class="field-group"><span class="label">PROFESSION:</span> <span class="data">Attorney / Lawyer</span></div>
+                <div class="field-group"><span class="label">INSURANCE:</span> <span class="data">Blue Cross Platinum</span></div>
+            </div>
+            <div class="col">
+                <div class="section-header">EMERGENCY CONTACT</div>
+                <div class="field-group"><span class="label">NAME:</span> <span class="data">Rose, Michael (Husband)</span></div>
+                <div class="field-group"><span class="label">PHONE:</span> <span class="data">555-8821</span></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="section-header">MEDICAL HISTORY</div>
+                <div class="field-group"><span class="label">CHRONIC:</span> <span class="data">Migraines</span></div>
+                <div class="field-group"><span class="label">MEDS:</span> <span class="data">Sumatriptan</span></div>
+                <div class="field-group"><span class="label">PREGNANCY:</span> <span class="data">[ ] YES [X] NO [ ] POSS</span></div>
+            </div>
+        </div>
+
+        <div class="row vitals-highlight">
+            <div class="col-2" style="border:none;">
+                <div class="section-header">PRIMARY ASSESSMENT (VITALS)</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr;">
+                    <div>
+                        <div class="label">RESPIRATION RATE</div>
+                        <div class="handwritten">NORMAL</div>
+                    </div>
+                    <div>
+                        <div class="label">PULSE RATE</div>
+                        <div class="handwritten">FAST (Stress)</div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <div class="label">BLOOD PRESSURE</div>
+                        <div class="handwritten">130/85</div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <div class="label">SPO2</div>
+                        <div class="handwritten">99%</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col" style="border:none; border-left:2px solid #000;">
+                <div class="label">CONSCIOUSNESS (AVPU)</div>
+                <div>[ ] ALERT</div>
+                <div>[X] VOICE (Confused)</div>
+                <div>[ ] PAIN</div>
+                <div>[ ] UNRESPONSIVE</div>
+                <br>
+                <div class="label">NOTES</div>
+                <div class="handwritten">Ambulatory (Walking)</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="section-header">INJURY / TRAUMA NOTES</div>
+                <p class="data">Patient found walking near vehicle. Superficial abrasion on forehead. Bleeding stopped naturally. Patient is asking repetitive questions ("Where is my car?").</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <div class="header">
+            <div><h1>EMS FIELD REPORT</h1><p>UNIT 42 | INCIDENT #902 | SECTOR: ROAD</p></div>
+            <div style="text-align:right;"><p>TIME: 22:52</p></div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+                <div class="section-header">PATIENT DEMOGRAPHICS</div>
+                <div class="field-group"><span class="label">LAST NAME:</span> <span class="data">M.</span></div>
+                <div class="field-group"><span class="label">FIRST NAME:</span> <span class="data">KEVIN</span></div>
+                <div class="field-group"><span class="label">DOB:</span> <span class="data">2009-02-14 (16yo)</span></div>
+                <div class="field-group"><span class="label">SCHOOL:</span> <span class="data">City High School (Varsity Jacket ID)</span></div>
+                <div class="field-group"><span class="label">PARENT:</span> <span class="data">Unable to contact</span></div>
+            </div>
+            <div class="col">
+                <div class="section-header">EMERGENCY CONTACT</div>
+                <div class="field-group"><span class="label">NAME:</span> <span class="data">Unknown</span></div>
+                <div class="field-group"><span class="label">PHONE:</span> <span class="data">Locked Phone Found</span></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="section-header">MEDICAL HISTORY</div>
+                <div class="field-group"><span class="label">HISTORY:</span> <span class="data">Inhaler found (Asthma?)</span></div>
+                <div class="field-group"><span class="label">ALLERGIES:</span> <span class="data">Unknown</span></div>
+            </div>
+        </div>
+
+        <div class="row vitals-highlight">
+            <div class="col-2" style="border:none;">
+                <div class="section-header">PRIMARY ASSESSMENT (VITALS)</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr;">
+                    <div>
+                        <div class="label">RESPIRATION RATE</div>
+                        <div class="handwritten">AGONAL / GASPING</div>
+                    </div>
+                    <div>
+                        <div class="label">PULSE RATE</div>
+                        <div class="handwritten">INITIALLY ABSENT</div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <div class="label">SKIN</div>
+                        <div class="handwritten">Cyanotic (Blue)</div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <div class="label">CAPILLARY REFILL</div>
+                        <div class="handwritten">> 4 sec</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col" style="border:none; border-left:2px solid #000;">
+                <div class="label">CONSCIOUSNESS (AVPU)</div>
+                <div>[ ] ALERT</div>
+                <div>[ ] VOICE</div>
+                <div>[ ] PAIN</div>
+                <div>[X] UNRESPONSIVE</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="section-header">INJURY / TRAUMA NOTES</div>
+                <p class="data">Patient ejected from vehicle. Supine position. No major external bleeding. Chest not rising normally. <span class="handwritten">Suspected Cardiac Arrest.</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <div class="header">
+            <div><h1>EMS FIELD REPORT</h1><p>UNIT 42 | INCIDENT #902 | SECTOR: WALL</p></div>
+            <div style="text-align:right;"><p>TIME: 22:49</p></div>
+        </div>
+
+        <div class="row">
+            <div class="col-2">
+                <div class="section-header">PATIENT DEMOGRAPHICS</div>
+                <div class="field-group"><span class="label">LAST NAME:</span> <span class="data">ROSS</span></div>
+                <div class="field-group"><span class="label">FIRST NAME:</span> <span class="data">MIKE</span></div>
+                <div class="field-group"><span class="label">DOB:</span> <span class="data">1993-08-20 (32yo)</span></div>
+                <div class="field-group"><span class="label">EMPLOYER:</span> <span class="data">HardHat Construction Corp.</span></div>
+                <div class="field-group"><span class="label">UNION ID:</span> <span class="data">#4492-B</span></div>
+            </div>
+            <div class="col">
+                <div class="section-header">EMERGENCY CONTACT</div>
+                <div class="field-group"><span class="label">NAME:</span> <span class="data">Ross, Linda</span></div>
+                <div class="field-group"><span class="label">PHONE:</span> <span class="data">555-1029</span></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="section-header">MEDICAL HISTORY</div>
+                <div class="field-group"><span class="label">HABITS:</span> <span class="data">Smoker (1 pack/day)</span></div>
+                <div class="field-group"><span class="label">HISTORY:</span> <span class="data">None listed</span></div>
+            </div>
+        </div>
+
+        <div class="row vitals-highlight">
+            <div class="col-2" style="border:none;">
+                <div class="section-header">PRIMARY ASSESSMENT (VITALS)</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr;">
+                    <div>
+                        <div class="label">RESPIRATION RATE</div>
+                        <div class="handwritten">CRITICAL / FAST</div>
+                    </div>
+                    <div>
+                        <div class="label">PULSE RATE</div>
+                        <div class="handwritten">FAST / WEAK</div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <div class="label">BLOOD PRESSURE</div>
+                        <div class="handwritten">90/50 (Hypotensive)</div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <div class="label">SPO2</div>
+                        <div class="handwritten">88%</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col" style="border:none; border-left:2px solid #000;">
+                <div class="label">CONSCIOUSNESS (AVPU)</div>
+                <div>[X] ALERT</div>
+                <div>[ ] VOICE</div>
+                <div>[ ] PAIN</div>
+                <div>[ ] UNRESPONSIVE</div>
+                <br>
+                <div class="label">COMPLAINT</div>
+                <div class="handwritten">"Can't breathe"</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="section-header">INJURY / TRAUMA NOTES</div>
+                <p class="data">Blunt force trauma to chest (Steering wheel imprint visible). Patient struggling for air. Sweating profusely.</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
