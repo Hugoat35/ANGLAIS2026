@@ -7,6 +7,96 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=1.0">
+    
+    <style>
+        .intro-container {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100%; width: 100%;
+        }
+
+        .mission-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(14, 165, 233, 0.3);
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        /* Coins décoratifs */
+        .corner {
+            position: absolute; width: 20px; height: 20px;
+            border: 2px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+        .tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+        .tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+        .bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+        .br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+        .mission-card:hover .corner { width: 30px; height: 30px; box-shadow: 0 0 10px var(--primary); }
+
+        .alert-blink {
+            color: var(--alert); font-weight: 900; letter-spacing: 3px; font-size: 1.5rem;
+            animation: blinkRed 1s infinite alternate;
+            margin-bottom: 20px; display: block;
+        }
+
+        .mission-title {
+            font-size: 3rem; margin: 0; line-height: 1;
+            text-transform: uppercase; color: #fff;
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .mission-details {
+            font-family: var(--font-mono); color: #94a3b8; margin: 20px 0 40px 0;
+            font-size: 0.9rem; line-height: 1.6; border-top: 1px solid #333; border-bottom: 1px solid #333;
+            padding: 20px 0;
+        }
+
+        /* Le Gros Bouton */
+        .launch-btn {
+            display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 200px; height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(14,165,233,0.1) 0%, rgba(14,165,233,0) 70%);
+            border: 2px solid var(--primary);
+            color: var(--primary); text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative; overflow: hidden;
+            animation: pulseBtn 2s infinite;
+        }
+
+        .launch-btn span { font-size: 1.8rem; font-weight: 800; letter-spacing: 2px; z-index: 2; }
+        .launch-btn small { font-size: 0.8rem; font-family: var(--font-mono); color: #fff; margin-top: 5px; z-index: 2; }
+
+        .launch-btn::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--primary); opacity: 0; transition: 0.3s; z-index: 1;
+        }
+
+        .launch-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 50px var(--primary);
+            background: rgba(14, 165, 233, 0.2);
+            color: #fff;
+            border-color: #fff;
+        }
+        
+        .launch-btn:active { transform: scale(0.95); }
+
+        @keyframes blinkRed { from { opacity: 1; text-shadow: 0 0 10px var(--alert); } to { opacity: 0.5; text-shadow: none; } }
+        @keyframes pulseBtn { 0% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4); } 70% { box-shadow: 0 0 0 20px rgba(14, 165, 233, 0); } 100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); } }
+
+        .sys-check {
+            display: flex; justify-content: space-between; width: 100%; padding: 0 20px;
+            font-family: var(--font-mono); font-size: 0.7rem; color: #64748b; margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
 
@@ -20,42 +110,56 @@
         
         <header class="top-bar">
             <div class="brand">✚ EMS <span>TRAINING OS</span></div>
-            <div class="status-badge">CONNECTED</div>
+            <div class="status-badge" style="background: #333; color: #aaa; border-color:#555;">STANDBY</div>
         </header>
 
         <div class="content-area">
-            <div class="menu-grid">
-                
-                                <div class="menu-info">
-                    <h1 style="border-left: 5px solid var(--alert); padding-left: 20px;">
-                        ALERT LEVEL: <span style="color:var(--alert)">CRITICAL</span><br>
-                        INCIDENT #902
-                    </h1>
-                    <p style="font-family:var(--font-mono); color:#cbd5e1; margin-top:20px; max-width:400px; line-height:1.6;">
-                        <strong>// INCOMING TRANSMISSION</strong><br>
-                        Multiple impacts reported on Highway 404. Structural collapse confirmed.<br>
-                        All units are mobilized.<br><br>
-                        <strong>UNIT 42:</strong> Your status is required immediately.
-                    </p>
-                </div>
+            
+            <div class="intro-container">
+                <div class="mission-card">
+                    <div class="corner tl"></div><div class="corner tr"></div>
+                    <div class="corner bl"></div><div class="corner br"></div>
 
-                <div class="menu-action">
-                    <a href="enigme_cards.html" class="big-start-btn">
-                        <span>LAUNCH</span>
+                    <span class="alert-blink">⚠ INCOMING ALERT</span>
+                    
+                    <h1 class="mission-title">INCIDENT #902</h1>
+                    
+                    <div class="mission-details">
+                        <strong>LOCATION:</strong> HIGHWAY 404 (NORTH SECTOR)<br>
+                        <strong>TYPE:</strong> MASS CASUALTY / STRUCTURE COLLAPSE<br>
+                        <strong>UNIT 42 STATUS:</strong> REQUIRED IMMEDIATELY
+                    </div>
+
+                    <a href="enigme_cards.html" class="launch-btn" onclick="if(typeof AudioEngine !== 'undefined') AudioEngine.playClick();">
+                        <span>INITIATE</span>
                         <small>TAP TO START</small>
                     </a>
-                </div>
 
+                    <div class="sys-check">
+                        <span>SERVER: CONNECTED</span>
+                        <span>LATENCY: 12ms</span>
+                        <span>ENCRYPTION: AES-256</span>
+                    </div>
+                </div>
             </div>
+
         </div>
 
         <footer class="footer-vitals">
-            <div style="font-size:0.8rem; color:#64748b;">UNIT ID: IPAD-PRO-2025</div>
+            <div style="font-size:0.8rem; color:#64748b;">SYSTEM: ONLINE</div>
             <div style="font-size:0.8rem; color:#64748b;">BATTERY: 98%</div>
         </footer>
 
     </div>
+
     <script src="script_audio.js"></script>
     <script src="debug_admin.js"></script>
+    
+    <script>
+        window.onload = function() {
+            // Nettoyage préventif pour s'assurer d'une nouvelle partie propre
+            console.log("Menu loaded. System ready.");
+        };
+    </script>
 </body>
 </html>
