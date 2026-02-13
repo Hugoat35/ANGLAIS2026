@@ -119,10 +119,6 @@ window.onload = function() {
     loadPatient(0);
     startTime = Date.now();
     
-    if(typeof AudioEngine !== 'undefined') {
-        AudioEngine.init();
-        AudioEngine.playAmbience('ambience_chaos.mp3');
-    }
 
     // Ajout de l'écouteur pour le raccourci clavier
     document.addEventListener('keydown', (e) => {
@@ -140,7 +136,13 @@ function shuffleArray(array) {
 }
 
 function closeBriefing() {
-    if(typeof AudioEngine !== 'undefined') AudioEngine.playClick();
+    if(typeof AudioEngine !== 'undefined') {
+        AudioEngine.init(); // On initialise le moteur audio ici (sur un clic)
+        AudioEngine.playClick();
+        // C'est le moment parfait pour lancer l'ambiance !
+        AudioEngine.playAmbience('ambience_chaos.mp3'); 
+    }
+    
     document.getElementById('overlay-briefing').classList.remove('visible');
     startTime = Date.now(); 
 }
@@ -443,6 +445,7 @@ function submitTriage() {
 
 /* DANS script_triage.js - Remplace toute la fonction triggerVictory */
 
+// --- VICTOIRE & BARÈME STRICT (30 MIN MAX) ---
 function triggerVictory() {
     if(typeof AudioEngine !== 'undefined') {
         AudioEngine.stopAmbience();
@@ -450,53 +453,67 @@ function triggerVictory() {
     }
 
     const endTime = Date.now();
-    // Si step3Duration est négatif (bug admin), on met 0
     const step3Duration = Math.max(0, endTime - startTime);
     
-    // Récupération des stats (localStorage)
-    const stats1 = JSON.parse(localStorage.getItem('stats_step1')) || { time: 0, errors: 0 };
-    const stats2 = JSON.parse(localStorage.getItem('stats_step2')) || { time: 0, errors: 0 };
-    // Récupération des indices (ajoutés via le Admin Panel)
-    const totalHints = parseInt(localStorage.getItem('total_hints') || "0");
+    // SÉCURITÉ : Lecture stats (évite les bugs si vide)
+    let stats1 = { time: 0, errors: 0 };
+    let stats2 = { time: 0, errors: 0 };
+    let totalHints = 0;
+
+    try {
+        if(localStorage.getItem('stats_step1')) stats1 = JSON.parse(localStorage.getItem('stats_step1'));
+        if(localStorage.getItem('stats_step2')) stats2 = JSON.parse(localStorage.getItem('stats_step2'));
+        if(localStorage.getItem('total_hints')) totalHints = parseInt(localStorage.getItem('total_hints'));
+    } catch(e) { console.warn("Erreur lecture stats:", e); }
     
-    const totalTimeMs = stats1.time + stats2.time + step3Duration;
-    const totalErrors = stats1.errors + stats2.errors + totalErrorsCount;
+    // Calculs (le || 0 empêche le bug NaN)
+    const totalTimeMs = (stats1.time || 0) + (stats2.time || 0) + step3Duration;
+    const totalErrors = (stats1.errors || 0) + (stats2.errors || 0) + totalErrorsCount;
     
-    // Formatage du temps
     const totalSeconds = Math.floor(totalTimeMs / 1000);
     const mins = Math.floor(totalSeconds / 60);
     const secs = totalSeconds % 60;
     const timeString = `${mins < 10 ? '0'+mins : mins}:${secs < 10 ? '0'+secs : secs}`;
 
-    // --- ALGORITHME DE RANG ROBUSTE ---
-    // On calcule un score de "Pénalité". 0 = Parfait.
-    // Chaque erreur = +5 points de pénalité
-    // Chaque indice = +10 points de pénalité
-    // Chaque minute passée = +2 points de pénalité
+    // --- NOUVEAU BARÈME STRICT (30 MIN MAX) ---
+    // Score = Minutes + (Erreurs * 5) + (Indices * 5)
+    let penalty = 0;
+    penalty += mins;                // 1 pt par minute
+    penalty += (totalErrors * 5);   // 5 pts par erreur (ex: 2 erreurs = +10 min virtuelles)
+    penalty += (totalHints * 5);    // 5 pts par indice
+
+    let rank = 'D'; 
+    // Objectif : Finir vite !
+    if (penalty <= 18) rank = 'S';      // Ex: 15 min + 0 erreur (Excellent)
+    else if (penalty <= 23) rank = 'A'; // Ex: 20 min + 0 erreur (Très bien)
+    else if (penalty <= 28) rank = 'B'; // Ex: 25 min + 0 erreur (Bien)
+    else if (penalty <= 33) rank = 'C'; // Ex: 28 min + 1 erreur (Juste)
+    // Au-dessus de 33 points (ex: 30 min + erreurs), c'est un D.
+
+    // Affichage SÉCURISÉ (Vérifie si les éléments existent)
+    const elTime = document.getElementById('vic-time');
+    if(elTime) elTime.innerText = timeString;
+
+    const elErr = document.getElementById('vic-errors');
+    if(elErr) elErr.innerText = totalErrors;
+
+    const elHints = document.getElementById('vic-hints');
+    if(elHints) elHints.innerText = totalHints;
+
+    const elRank = document.getElementById('vic-rank');
+    if(elRank) {
+        elRank.innerText = rank;
+        // FIX BUG NOTE INVISIBLE : On force l'affichage après un court délai
+        elRank.style.transform = "scale(0)"; // Reset avant anim
+        setTimeout(() => { 
+            elRank.style.transition = "transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+            elRank.style.transform = "scale(1)"; 
+        }, 500);
+    }
+
+    const screen = document.getElementById('victory-screen');
+    if(screen) screen.classList.add('visible');
     
-    let penaltyScore = 0;
-    penaltyScore += (totalErrors * 5);
-    penaltyScore += (totalHints * 10);
-    penaltyScore += (Math.floor(totalSeconds / 60) * 2);
-
-    let rank = 'D'; // Valeur par défaut (Le filet de sécurité)
-
-    // On remonte le rang si le score est bas
-    if (penaltyScore < 50) rank = 'C';
-    if (penaltyScore < 30) rank = 'B';
-    if (penaltyScore < 15) rank = 'A';
-    if (penaltyScore < 5)  rank = 'S'; // Quasi parfait
-
-    // Mise à jour de l'affichage
-    document.getElementById('vic-time').innerText = timeString;
-    document.getElementById('vic-errors').innerText = totalErrors;
-    document.getElementById('vic-hints').innerText = totalHints; // Affiche les indices
-    document.getElementById('vic-rank').innerText = rank;
-
-    // Afficher l'écran
-    document.getElementById('victory-screen').classList.add('visible');
-    
-    // Confettis
     for(let i=0; i<50; i++) createConfetti();
 }
 

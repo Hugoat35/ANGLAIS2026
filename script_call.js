@@ -49,10 +49,6 @@ document.addEventListener('keydown', function(e) {
 window.onload = function() {
     levelStartTime = Date.now();
     
-    // On initialise l'audio MAIS on ne lance pas le son tout de suite
-    if(typeof AudioEngine !== 'undefined') {
-        AudioEngine.init();
-    }
 };
 
 function pressKey(num) {
