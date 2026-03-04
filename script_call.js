@@ -6,9 +6,9 @@ const CALL_DURATION = 120;
 const HINTS = [
     "HAZARDS (Fire? Gas? Traffic?)",
     "NATURE OF THE INCIDENT (What happened?)",
+    "NUMBER OF VICTIMS (How many?)",
     "CONDITION OF VICTIMS (Conscious? Breathing?)",
     "LOCATION (Where are you?)",
-    "NUMBER OF VICTIMS (How many?)",
 ];
 
 // --- VARIABLES ---
